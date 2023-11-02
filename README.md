@@ -8,4 +8,5 @@ Three lessons I have learnt about clean code in this subject are:
 3. usage of docstrings, ect. to annotate and describe my work
 
 [CP1404 Practicals instructions repo](https://github.com/CP1404/Practicals)
+
 [Programming Guides](https://github.com/CP1404/Starter/wiki)
