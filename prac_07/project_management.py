@@ -47,6 +47,7 @@ def main():
 
         elif command.upper() == "F":
             """If 'F' is entered, Ask the user for a date and display projects that start after that date in order."""
+            filter_data(projects)
 
         elif command.upper() == "A":
             """If 'A' is entered, add a new project to the list."""
@@ -54,10 +55,10 @@ def main():
 
             """Get user input for the project's info."""
             name = get_name_input("Name: ")
-            year = get_date_input()
-            priority = get_num_float_input("Priority: ")
-            cost = get_num_float_input("Cost estimate: $")
-            percent_complete = get_num_float_input("Percent complete: ")
+            year = get_date_input("Start date (dd/mm/yy): ")
+            priority = get_num_float_input("Priority: ", False)
+            cost = get_num_float_input("Cost estimate: $", False)
+            percent_complete = get_num_float_input("Percent complete: ", False)
 
             """add all data into Project object"""
             project_info = Project(name, year, priority, cost, percent_complete)
@@ -67,6 +68,7 @@ def main():
 
         elif command.upper() == "U":
             """If 'U' is entered, Choose a project, then modify the completion % and/or priority"""
+            update_project(projects)
 
         else:
             """Handle an invalid menu choice."""
@@ -94,20 +96,20 @@ def load_file(file_name):
 
 def save_file(file_name, projects):
     with open(file_name, "w") as in_file:
+        in_file.write("Name	Start Date	Priority	Cost Estimate	Completion Percentage\n")
         for project in projects:
-            project = "\t".join(project) + "\n"
-            in_file.write(project)
+            in_file.write(project.write_string())
 
 
 def get_file_name():
     wrong_file_name = True
-    file_name = input("File Name: ")
+    file_name = ""
     while wrong_file_name:
+        file_name = input("File Name: ")
         if file_name != FILENAME:
             print("Provide a valid file")
         else:
             wrong_file_name = False
-        file_name = input("File Name: ")
     return file_name
 
 
@@ -124,6 +126,29 @@ def display_projects(projects):
     print("\n")
 
 
+def update_project(projects):
+    for project_num, project in enumerate(projects):
+        print(f"{project_num} - {project}")
+    project_choice = int(get_num_float_input("Project choice: ", False))
+    print(projects[project_choice])
+    percentage = get_num_float_input("New Percentage: ", True)
+    priority = get_num_float_input("New Priority: ", True)
+    project_info = projects[project_choice]
+    if percentage != '':
+        project_info.completion_percentage = percentage
+    if priority != '':
+        project_info.priority = priority
+    projects[project_choice] = project_info
+
+
+def filter_data(projects):
+    date = get_date_input("Show projects that start after date (dd/mm/yy): ")
+    projects.sort()
+    for project in projects:
+        if project.start_date >= date:
+            print(project)
+
+
 def get_name_input(input_text):
     user_input = ""
     error = True
@@ -136,14 +161,14 @@ def get_name_input(input_text):
     return user_input
 
 
-def get_date_input():
-    date_input = datetime(0, 0, 0, 0, 0).date()
+def get_date_input(input_text):
+    date_input = datetime(1, 1, 1, 0, 0).date()
     error = True
     while error:
         try:
-            user_input = input("Start date (dd/mm/yy): ")
+            user_input = input(input_text)
             date_input = datetime.strptime(user_input, '%d/%m/%Y').date()
-            if date_input <= datetime(0, 0, 0, 0, 0).date():
+            if date_input <= datetime(1, 1, 1, 0, 0).date():
                 print("Date must be > 00/00/0000.")
             else:
                 error = False
@@ -152,7 +177,7 @@ def get_date_input():
     return date_input
 
 
-def get_num_float_input(input_text):
+def get_num_float_input(input_text, allow_null):
     user_input = 0
     error = True
     while error:
@@ -163,7 +188,10 @@ def get_num_float_input(input_text):
             else:
                 error = False
         except ValueError:
-            print("Invalid input; enter a valid number")
+            if allow_null:
+                return ""
+            else:
+                print("Invalid input; enter a valid number")
     return user_input
 
 
