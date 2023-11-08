@@ -7,7 +7,7 @@ Started 8/11/2023
 
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.button import Label
+from kivy.uix.label import Label
 
 
 class DynamicLabelsApp(App):
