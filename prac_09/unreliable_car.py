@@ -1,6 +1,6 @@
 """
 CP1404/CP5632 Practical
-Car class
+UnreliableCar class
 """
 from car import Car
 from random import randint
